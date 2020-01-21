@@ -4,6 +4,10 @@
 
 # CorDapp Template - Kotlin
 
+    flow start CreateFlow
+    run vaultQuery contractStateType: com.template.states.TemplateState
+    flow start AddFlow amount: 1, linearId: ff3e67a8-e012-411a-a78e-f1daa8368561
+
 Welcome to the Kotlin CorDapp template. The CorDapp template is a stubbed-out CorDapp that you can use to bootstrap 
 your own CorDapps.
 

@@ -41,7 +41,7 @@ class CreateFlow : FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
         progressTracker.currentStep = GENERATING_TRANSACTION
-        val state = TemplateState(0)
+        val state = TemplateState(0, listOf(ourIdentity))
         val txBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities[0])
                 .addCommand(Command(TemplateContract.Commands.Create(), ourIdentity.owningKey))
                 .addOutputState(state, TemplateContract.ID)

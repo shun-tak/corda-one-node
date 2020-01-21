@@ -23,14 +23,14 @@ class TemplateContract : Contract {
         when(command.value) {
             is Commands.Create -> requireThat {
                 "# of inputs should be 0" using (tx.inputs.isEmpty())
-                "# of outputs should be 1" using (tx.inputs.size == 1)
+                "# of outputs should be 1" using (tx.outputs.size == 1)
                 val output = tx.outputsOfType<TemplateState>().single()
                 "output value should be 0" using (output.value == 0)
             }
 
             is Commands.Add -> requireThat {
                 "# of inputs should be 1" using (tx.inputs.size == 1)
-                "# of outputs should be 1" using (tx.inputs.size == 1)
+                "# of outputs should be 1" using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TemplateState>().single()
                 val output = tx.outputsOfType<TemplateState>().single()
                 "input value should be less than output value" using (input.value < output.value)
@@ -39,7 +39,7 @@ class TemplateContract : Contract {
 
             is Commands.Sub -> requireThat {
                 "# of inputs should be 1" using (tx.inputs.size == 1)
-                "# of outputs should be 1" using (tx.inputs.size == 1)
+                "# of outputs should be 1" using (tx.outputs.size == 1)
                 val input = tx.inputsOfType<TemplateState>().single()
                 val output = tx.outputsOfType<TemplateState>().single()
                 "input value should be greater than output value" using (input.value > output.value)
