@@ -1,7 +1,7 @@
 package com.template.contracts
 
-import net.corda.core.contracts.CommandData
-import net.corda.core.contracts.Contract
+import com.template.states.TemplateState
+import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 
 // ************
@@ -9,18 +9,42 @@ import net.corda.core.transactions.LedgerTransaction
 // ************
 class TemplateContract : Contract {
     companion object {
-        // Used to identify our contract when building a transaction.
         const val ID = "com.template.contracts.TemplateContract"
     }
 
-    // A transaction is valid if the verify() function of the contract of all the transaction's input and output states
-    // does not throw an exception.
-    override fun verify(tx: LedgerTransaction) {
-        // Verification logic goes here.
+    interface Commands : CommandData {
+        class Create : TypeOnlyCommandData(), Commands
+        class Add : TypeOnlyCommandData(), Commands
+        class Sub : TypeOnlyCommandData(),Commands
     }
 
-    // Used to indicate the transaction's intent.
-    interface Commands : CommandData {
-        class Action : Commands
+    override fun verify(tx: LedgerTransaction) {
+        val command = tx.commands.requireSingleCommand<Commands>()
+        when(command.value) {
+            is Commands.Create -> requireThat {
+                "# of inputs should be 0" using (tx.inputs.isEmpty())
+                "# of outputs should be 1" using (tx.inputs.size == 1)
+                val output = tx.outputsOfType<TemplateState>().single()
+                "output value should be 0" using (output.value == 0)
+            }
+
+            is Commands.Add -> requireThat {
+                "# of inputs should be 1" using (tx.inputs.size == 1)
+                "# of outputs should be 1" using (tx.inputs.size == 1)
+                val input = tx.inputsOfType<TemplateState>().single()
+                val output = tx.outputsOfType<TemplateState>().single()
+                "input value should be less than output value" using (input.value < output.value)
+                "attributes are same except value" using (input.copy(value = output.value) == output)
+            }
+
+            is Commands.Sub -> requireThat {
+                "# of inputs should be 1" using (tx.inputs.size == 1)
+                "# of outputs should be 1" using (tx.inputs.size == 1)
+                val input = tx.inputsOfType<TemplateState>().single()
+                val output = tx.outputsOfType<TemplateState>().single()
+                "input value should be greater than output value" using (input.value > output.value)
+                "attributes are same except value" using (input.copy(value = output.value) == output)
+            }
+        }
     }
 }
